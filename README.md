@@ -66,12 +66,12 @@ public static List<String> getContactNickNameList()
 public static List<JSONObject> getContactList()
 ```
 
-#### 3.获取群列表 WechatTools.getGroupIdList()
+#### 3.获取群列表 WechatTools.getGroupIdSet()
 
 群列表与好友列表不同，在登陆后群列表其实是空的，只有主动发送消息或者收到一条群消息时，才能获取到这个群的信息，群列表会记录这个群的id，其格式为`@@d052d34b9c9228830363013ee53deb461404f80ea353dbdd8fc9391cbf5f1c46`。调用此方法会返回已知的群列表。其声明函数为：
 
 ```
-public static List<String> getGroupIdList()
+public static List<String> getGroupIdSet()
 ```
 
 #### 4.根据群ID获取群成员WechatTools.getMemberListByGroupId()
@@ -122,12 +122,12 @@ public static void remarkNameByNickName(String nickName, String remName)
 public static boolean sendMsgByNickName(String text, String nickName)
 ```
 
-#### 10.根据ID发送文本消息， MessageTools.sendMsgById(String text, String id)
+#### 10.根据ID发送文本消息， MessageTools.sendMsgByUserName(String text, String id)
 
 根据ID发送文本消息，发送者ID可以从`msg`里通过`msg.getString("FromUserName")`获取，格式为`@@d052d34b9c9228830363013ee53deb461404f80ea353dbdd8fc9391cbf5f1c46`（群消息）或`@a257b99314d8313862cd44ab02fe0f81`（非群消息），调用此方法可向指定id发送消息。其函数声明为：
 
 ```
-public static void sendMsgById(String text, String id)
+public static void sendMsgByUserName(String text, String id)
 ```
 
 #### 11.根据好友昵称发送图片消息，MessageTools.sendPicMsgByNickName(String nickName, String filePath)
@@ -395,7 +395,7 @@ import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.beans.RecommendInfo;
 import cn.zhouyafeng.itchat4j.core.Core;
 import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
-import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
+import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeGroupEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
 
 /**
@@ -426,8 +426,8 @@ public class SimpleDemo implements IMsgHandlerFace {
 			}
 			if (text.equals("333")) { // 测试群列表
 				System.out.print(WechatTools.getGroupNickNameList());
-				System.out.print(WechatTools.getGroupIdList());
-				System.out.print(Core.getInstance().getGroupMemeberMap());
+				System.out.print(WechatTools.getGroupIdSet());
+				System.out.print(Core.getInstance().getGroupMemberMap());
 			}
 			return text;
 		}
@@ -533,7 +533,7 @@ import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.core.Core;
 import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
 import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
-import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeEnum;
+import cn.zhouyafeng.itchat4j.utils.enums.MsgTypeGroupEnum;
 import cn.zhouyafeng.itchat4j.utils.tools.DownloadTools;
 
 /**
@@ -561,7 +561,7 @@ public class TulingRobot implements IMsgHandlerFace {
 		String paramStr = JSON.toJSONString(paramMap);
 		try {
 			HttpEntity entity = myHttpClient.doPost(url, paramStr);
-			result = EntityUtils.toString(entity, "UTF-8");
+			result = EntityUtils.syncTask(entity, "UTF-8");
 			JSONObject obj = JSON.parseObject(result);
 			if (obj.getString("code").equals("100000")) {
 				result = obj.getString("text");
@@ -653,7 +653,7 @@ import cn.zhouyafeng.itchat4j.beans.BaseMsg;
 import cn.zhouyafeng.itchat4j.core.Core;
 import cn.zhouyafeng.itchat4j.face.IMsgHandlerFace;
 import cn.zhouyafeng.itchat4j.utils.MyHttpClient;
-import cn.zhouyafeng.itchat4j.utils.enums.StorageLoginInfoEnum;
+import cn.zhouyafeng.itchat4j.utils.enums.StorageLoginInfoKey;
 
 /**
  * 此示例演示如何获取所有好友的头像
